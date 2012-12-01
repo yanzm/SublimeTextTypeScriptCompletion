@@ -30876,6 +30876,13 @@ var BatchCompletion = (function () {
     function BatchCompletion(ioHost) {
         this.ioHost = ioHost;
     }
+    BatchCompletion.prototype.printUsage = function () {
+        this.ioHost.printLine("Syntax:   tsc [file] [position] [isMemberCompletion (true|false) ] ");
+        this.ioHost.printLine("");
+        this.ioHost.printLine("Examples: tsc hello.ts 10 true");
+        this.ioHost.printLine("          tsc hello.ts 20 false");
+        this.ioHost.printLine("");
+    };
     BatchCompletion.prototype.getCompletion = function () {
         var _this = this;
         TypeScript.CompilerDiagnostics.diagnosticWriter = {
@@ -30889,14 +30896,14 @@ var BatchCompletion = (function () {
         opts.flag('help', {
             usage: 'Print this message',
             set: function (type) {
-                opts.printUsage();
+                _this.printUsage();
                 printedUsage = true;
             }
         }, 'h');
         opts.parse(this.ioHost.arguments);
         if(opts.unnamed.length != 3) {
             if(!printedUsage) {
-                opts.printUsage();
+                this.printUsage();
             }
             return;
         }

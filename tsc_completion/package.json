@@ -1,0 +1,33 @@
+{
+	"name" : "tsc_completion",
+	"author" : "Yuki Anzai <anzai.y.aa@gmail.com>",
+	"version" : "1.0.0",
+	"description" : "get completion of Typescript from .tsc file and position.",
+	"keywords" : ["TypeScript", "completion"],
+	"bugs" : { 
+		"web" : "https://github.com/yanzm/SublimeTextTypeScriptCompletion/issues" 
+	},
+	"repository" : { 
+		"type" : "git", 
+		"url" : "https://github.com/yanzm/SublimeTextTypeScriptCompletion.git" 
+	},
+	"main" : "./bin/tsc-completion.js",
+	"bin" : {
+		"tsc-completion" : "./bin/tsc-completion"
+	},
+	 "dependencies": {},
+	 "devDependencies": {},
+	 "optionalDependencies": {},
+	 "engines": {
+	 	"node": "*"
+	 },
+	 "_engineSupported": true,
+	 "_npmVersion": "1.1.22",
+	 "_nodeVersion": "v0.6.18",
+	 "_defaultsLoaded": true,
+	 "_from": "tsc_completion",
+	 "licenses" : [ { 
+	 	"type" : "Apache 2.0", 
+	 	"url" : "https://github.com/yanzm/SublimeTextTypeScriptCompletion/blob/master/LICENSE.txt"
+	 }]
+}	
