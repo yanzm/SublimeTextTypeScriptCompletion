@@ -33,7 +33,7 @@ def get_completions(view, settings):
 
 	path = settings.get('path')
 	if path is not None:
-	    os.environ['PATH'] = os.environ['PATH'] + ':' + path
+	    os.environ['PATH'] += ':' + path
 
 	point = view.sel()[0].a
 	row, col = view.rowcol(point)
