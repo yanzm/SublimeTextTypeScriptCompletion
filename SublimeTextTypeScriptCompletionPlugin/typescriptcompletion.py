@@ -10,7 +10,6 @@ def check_output(*popenargs, **kwargs):
     Python 2.6.2
 	"""
 
-    os.environ['PATH'] = '/usr/local/bin:/opt/local/bin'
     process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
     output, unused_err = process.communicate()
     retcode = process.poll()
@@ -32,6 +31,9 @@ def get_completions(view, settings):
 	if comp is None:
 		comp = 'tsc-completion'
 
+	path = settings.get('path')
+	if path is not None:
+	    os.environ['PATH'] = os.environ['PATH'] + ':' + path
 
 	point = view.sel()[0].a
 	row, col = view.rowcol(point)
