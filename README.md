@@ -3,7 +3,7 @@ SublimeTextTypeScriptCompletion
 
 Sublime Text 2 Plugin for TypeScript completion
 
-instaction
+instruction
 
 > npm install -p tsc_completion
 
