@@ -1,7 +1,7 @@
 {
 	"name" : "tsc_completion",
 	"author" : "Yuki Anzai <anzai.y.aa@gmail.com>",
-	"version" : "1.0.0",
+	"version" : "1.0.2",
 	"description" : "get completion of Typescript from .tsc file and position.",
 	"keywords" : ["TypeScript", "completion"],
 	"bugs" : { 
