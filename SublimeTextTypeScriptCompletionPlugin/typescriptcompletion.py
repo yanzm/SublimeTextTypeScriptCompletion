@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, os, json, subprocess
+import sublime, sublime_plugin, os, json, subprocess, tempfile
 
 # https://gist.github.com/1027906
 def check_output(*popenargs, **kwargs):
@@ -27,27 +27,38 @@ def system(command):
 	return check_output(command, startupinfo=startupinfo)
 
 def get_completions(view, settings):
-	comp = settings.get('typescript_completion_command')
-	if comp is None:
-		comp = 'tsc-completion'
 
-	path = settings.get('path')
-	if path is not None:
-	    os.environ['PATH'] += ':' + path
+    temp, tempPath = tempfile.mkstemp()
+    try:
+        with os.fdopen(temp, 'w') as f:
+            f.write(view.substr(sublime.Region(0, view.size())))
+            f.close()
 
-	point = view.sel()[0].a
-	row, col = view.rowcol(point)
-	point = point + row
+            comp = settings.get('typescript_completion_command')
+            if comp is None:
+            	comp = 'tsc-completion'
 
-	command = [
-		'tsc-completion', view.file_name(), str(point), '1'
-	]
+            path = settings.get('path')
+            if path is not None:
+            	os.environ['PATH'] += ':' + path
 
-	try:
-		ret = system(command)
-		return json.loads(ret)
-	except subprocess.CalledProcessError:
-		return []
+            point = view.sel()[0].a
+
+            command = [
+            	'tsc-completion', tempPath, str(point), '1'
+            	]
+
+        try:
+            ret = system(command)
+            return json.loads(ret)
+        except subprocess.CalledProcessError:
+            return []
+    finally:
+        try:
+            os.remove(tempPath)
+        except IOError:
+            pass
+
 
 
 class TypeScriptCompletionListener(sublime_plugin.EventListener):

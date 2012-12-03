@@ -30534,8 +30534,8 @@ var CustomHarness;
             this.scripts = [];
             this.maxScriptVersions = 100;
         }
-        TypeScriptLS.prototype.addDefaultLibrary = function () {
-            var libText = "lib.d.ts";
+        TypeScriptLS.prototype.addDefaultLibrary = function (libPath) {
+            var libText = libPath ? CustomHarness.CollateralReader.read(libPath) : '';
             this.addScript("lib.d.ts", libText, true);
         };
         TypeScriptLS.prototype.addFile = function (name, isResident) {
@@ -30901,6 +30901,9 @@ var BatchCompletion = (function () {
             }
         }, 'h');
         opts.parse(this.ioHost.arguments);
+        var compilerFilePath = this.ioHost.getExecutingFilePath();
+        var binDirPath = this.ioHost.dirName(compilerFilePath);
+        var libStrPath = this.ioHost.resolvePath(binDirPath + "/lib.d.ts");
         if(opts.unnamed.length != 3) {
             if(!printedUsage) {
                 this.printUsage();
@@ -30913,7 +30916,7 @@ var BatchCompletion = (function () {
             this.isMemberCompletion = true;
         }
         var typescriptLS = new CustomHarness.TypeScriptLS();
-        typescriptLS.addDefaultLibrary();
+        typescriptLS.addDefaultLibrary(libStrPath);
         typescriptLS.addFile(this.fileName);
         var ls = typescriptLS.getLanguageService();
         var compEntry = ls.languageService.getCompletionsAtPosition(this.fileName, this.position, this.isMemberCompletion);
