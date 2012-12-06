@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, os, json, subprocess, tempfile
+import sublime, sublime_plugin, os, json, subprocess, tempfile, re
 
 # https://gist.github.com/1027906
 def check_output(*popenargs, **kwargs):
@@ -27,6 +27,19 @@ def system(command):
 	return check_output(command, startupinfo=startupinfo)
 
 def get_completions(view, settings):
+
+    # check reference
+    maxrow, maxcol = view.rowcol(view.size())
+    p = re.compile('\/\/\/\s+<reference\spath=\"(.+)\"\s*/>');
+    lib = []
+    for row in range(maxrow):
+        ref = view.substr(view.line(view.text_point(row, 0)));
+        match = p.match(ref)
+        if match == None:
+            break
+        lib += [match.group(1)]
+    
+    print lib
 
     temp, tempPath = tempfile.mkstemp()
     try:
