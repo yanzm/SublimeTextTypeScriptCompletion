@@ -31,16 +31,14 @@ def get_completions(view, settings):
     # check reference
     maxrow, maxcol = view.rowcol(view.size())
     p = re.compile('\/\/\/\s+<reference\spath=\"(.+)\"\s*/>');
-    lib = []
+    refs = []
     for row in range(maxrow):
         ref = view.substr(view.line(view.text_point(row, 0)));
         match = p.match(ref)
         if match == None:
             break
-        lib += [match.group(1)]
+        refs += ['-r', match.group(1)]
     
-    print lib
-
     temp, tempPath = tempfile.mkstemp()
     try:
         with os.fdopen(temp, 'w') as f:
@@ -53,13 +51,19 @@ def get_completions(view, settings):
 
             path = settings.get('path')
             if path is not None:
-            	os.environ['PATH'] += ':' + path
+                os.environ['PATH'] += ':' + path
 
             point = view.sel()[0].a
 
             command = [
-            	'tsc-completion', tempPath, str(point), '1'
+            	'/Users/yanzm/Practice/TypeScript/tsc-completion', 
+                tempPath, str(point), 'true'
             	]
+
+            if len(refs) > 0 :
+                command += refs
+
+            #print command
 
         try:
             ret = system(command)

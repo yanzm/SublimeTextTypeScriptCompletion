@@ -30875,13 +30875,15 @@ var OptionsParser = (function () {
 var BatchCompletion = (function () {
     function BatchCompletion(ioHost) {
         this.ioHost = ioHost;
+        this.references = [];
     }
     BatchCompletion.prototype.printUsage = function () {
         this.ioHost.printLine("Syntax:   tsc [file] [position] [isMemberCompletion (true|false) ] ");
         this.ioHost.printLine("");
         this.ioHost.printLine("Examples: tsc hello.ts 10 true");
         this.ioHost.printLine("          tsc hello.ts 20 false");
-        this.ioHost.printLine("");
+        this.ioHost.printLine("Options:");
+        this.ioHost.printLine(" -r, --reference  Add reference file");
     };
     BatchCompletion.prototype.getCompletion = function () {
         var _this = this;
@@ -30900,10 +30902,16 @@ var BatchCompletion = (function () {
                 printedUsage = true;
             }
         }, 'h');
+        opts.option('reference', {
+            usage: 'Add a reference to the completion',
+            type: 'file',
+            experimental: true,
+            set: function (str) {
+                code = new TypeScript.SourceUnit(str, null);
+                _this.references.push(code);
+            }
+        }, 'r');
         opts.parse(this.ioHost.arguments);
-        var compilerFilePath = this.ioHost.getExecutingFilePath();
-        var binDirPath = this.ioHost.dirName(compilerFilePath);
-        var libStrPath = this.ioHost.resolvePath(binDirPath + "/lib.d.ts");
         if(opts.unnamed.length != 3) {
             if(!printedUsage) {
                 this.printUsage();
@@ -30912,11 +30920,19 @@ var BatchCompletion = (function () {
         }
         this.fileName = opts.unnamed[0];
         this.position = Number(opts.unnamed[1]);
-        if(opts.unnamed[2] == "1") {
+        if(opts.unnamed[2] == "true") {
             this.isMemberCompletion = true;
         }
         var typescriptLS = new CustomHarness.TypeScriptLS();
+        var compilerFilePath = this.ioHost.getExecutingFilePath();
+        var binDirPath = this.ioHost.dirName(compilerFilePath);
+        var libStrPath = this.ioHost.resolvePath(binDirPath + "/lib.d.ts");
         typescriptLS.addDefaultLibrary(libStrPath);
+        var refPath;
+        for(var i = 0; i < this.references.length; i++) {
+            refPath = this.references[i].path;
+            typescriptLS.addFile(refPath, true);
+        }
         typescriptLS.addFile(this.fileName);
         var ls = typescriptLS.getLanguageService();
         var compEntry = ls.languageService.getCompletionsAtPosition(this.fileName, this.position, this.isMemberCompletion);
