@@ -30,7 +30,7 @@ def get_completions(view, settings):
 
     # check reference
     maxrow, maxcol = view.rowcol(view.size())
-    p = re.compile('\/\/\/\s+<reference\spath=\"(.+)\"\s*/>');
+    p = re.compile('\/\/\/\s*<reference\spath=[\'|\"](.+)[\'|\"]\s*/>');
     refs = []
     for row in range(maxrow):
         ref = view.substr(view.line(view.text_point(row, 0)));
@@ -56,7 +56,7 @@ def get_completions(view, settings):
             point = view.sel()[0].a
 
             command = [
-            	'/Users/yanzm/Practice/TypeScript/tsc-completion', 
+            	'tsc-completion', 
                 tempPath, str(point), 'true'
             	]
 
