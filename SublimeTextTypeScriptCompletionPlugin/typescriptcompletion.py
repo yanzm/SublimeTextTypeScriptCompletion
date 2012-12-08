@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, os, json, subprocess, tempfile, re
+import sublime, sublime_plugin, os, json, subprocess, tempfile, re, codecs
 
 # https://gist.github.com/1027906
 def check_output(*popenargs, **kwargs):
@@ -43,6 +43,7 @@ def get_completions(view, settings):
     try:
         with os.fdopen(temp, 'w') as f:
             f.write(view.substr(sublime.Region(0, view.size())))
+            f = codecs.lookup('utf_8')[-1](f)
             f.close()
 
             comp = settings.get('typescript_completion_command')
