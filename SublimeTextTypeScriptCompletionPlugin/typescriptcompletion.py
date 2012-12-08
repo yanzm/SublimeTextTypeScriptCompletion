@@ -28,6 +28,8 @@ def system(command):
 
 def get_completions(view, settings):
 
+    currentDir = view.file_name().rsplit("/", 1)[0]
+
     # check reference
     maxrow, maxcol = view.rowcol(view.size())
     p = re.compile('\/\/\/\s*<reference\spath=[\'|\"](.+)[\'|\"]\s*/>');
@@ -37,7 +39,10 @@ def get_completions(view, settings):
         match = p.match(ref)
         if match == None:
             break
-        refs += ['-r', match.group(1)]
+        refName = match.group(1)
+        if not refName.startswith("/") :
+            refName = currentDir + "/" + refName
+        refs += ['-r', refName]
     
     temp, tempPath = tempfile.mkstemp()
     try:
@@ -64,7 +69,7 @@ def get_completions(view, settings):
             if len(refs) > 0 :
                 command += refs
 
-            #print command
+            print command
 
         try:
             ret = system(command)
