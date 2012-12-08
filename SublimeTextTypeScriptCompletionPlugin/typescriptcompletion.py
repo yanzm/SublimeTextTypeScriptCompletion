@@ -8,7 +8,7 @@ def check_output(*popenargs, **kwargs):
 
     >>> check_output(['/usr/bin/python', '--version'])
     Python 2.6.2
-	"""
+    """
 
     process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
     output, unused_err = process.communicate()
@@ -23,10 +23,10 @@ def check_output(*popenargs, **kwargs):
     return output
 
 def system(command):
-	startupinfo = None
-	return check_output(command, startupinfo=startupinfo)
+    startupinfo = None
+    return check_output(command, startupinfo=startupinfo)
 
-def get_completions(view, settings):
+def get_completions(view, settings, point):
 
     currentDir = view.file_name().rsplit("/", 1)[0]
 
@@ -47,24 +47,22 @@ def get_completions(view, settings):
     temp, tempPath = tempfile.mkstemp()
     try:
         with os.fdopen(temp, 'w') as f:
-            f.write(view.substr(sublime.Region(0, view.size())))
             f = codecs.lookup('utf_8')[-1](f)
+            f.write(view.substr(sublime.Region(0, view.size())))
             f.close()
 
             comp = settings.get('typescript_completion_command')
             if comp is None:
-            	comp = 'tsc-completion'
+                comp = 'tsc-completion'
 
             path = settings.get('path')
             if path is not None:
                 os.environ['PATH'] += ':' + path
 
-            point = view.sel()[0].a
-
             command = [
-            	'tsc-completion', 
+                'tsc-completion', 
                 tempPath, str(point), 'true'
-            	]
+                ]
 
             if len(refs) > 0 :
                 command += refs
@@ -85,15 +83,24 @@ def get_completions(view, settings):
 
 
 class TypeScriptCompletionListener(sublime_plugin.EventListener):
-	def __init__(self):
-		self.settings = sublime.load_settings("TypeScriptCompletion.sublime-settings");
+    def __init__(self):
+        self.settings = sublime.load_settings("TypeScriptCompletion.sublime-settings");
 
-	def on_query_completions(self, view, prefix, locations):
-		if not view.file_name().endswith('.ts'):
-			return []
+    def on_query_completions(self, view, prefix, locations):
 
-		words = get_completions(view, self.settings)
-		entries = words["entries"]
-		words = [(w["name"] + " " + w["type"], w["name"]) for w in entries]
+        enableWithDot = self.settings.get("enable_when_after_dot")
+        if enableWithDot :
+            if prefix != "" :
+                return []
 
-		return words
+        if view.file_name() == None :
+            return []
+
+        if not view.file_name().endswith('.ts'):
+            return []
+
+        words = get_completions(view, self.settings, locations[0])
+        entries = words["entries"]
+        words = [(w["name"] + " " + w["type"], w["name"]) for w in entries]
+
+        return words

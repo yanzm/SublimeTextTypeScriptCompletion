@@ -1,4 +1,5 @@
 {
     "typescript_completion_command": null,
-    "path": null
+    "path": "/usr/local/bin:/usr/bin:/opt/local/bin",
+    "enable_when_after_dot" : true
 }
