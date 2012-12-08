@@ -69,13 +69,13 @@ def get_completions(view, settings):
             if len(refs) > 0 :
                 command += refs
 
-            print command
+            #print command
 
         try:
             ret = system(command)
             return json.loads(ret)
         except subprocess.CalledProcessError:
-            return []
+            return {}
     finally:
         try:
             os.remove(tempPath)
